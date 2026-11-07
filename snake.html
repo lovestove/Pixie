@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Змейка</title>
+    <style>
+        body {
+            background-color: #090a0d;
+            color: #fff;
+            font-family: monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        canvas {
+            border: 2px solid rgba(255,255,255,0.08);
+            background-color: #121317;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let snake = [{x: 10, y: 10}];
+        let food = {x: 20, y: 20};
+        let direction = 1;
+        let score = 0;
+        let gameLoop;
+
+        function draw() {
+            ctx.fillStyle = '#121317';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#0f0';
+            for (let i = 0; i < snake.length; i++) {
+                let head = snake[i];
+                ctx.fillRect(head.x * 20, head.y * 20, 19, 19);
+                if (i > 0) {
+                    ctx.fillStyle = '#0a0';
+                    ctx.fillRect(head.x * 20, head.y * 20, 19, 19);
+                }
+            }
+
+            ctx.fillStyle = '#ff0';
+            ctx.fillRect(food.x * 20, food.y * 20, 19, 19);
+
+            gameLoop = setInterval(draw, 100);
+        }
+
+        function move() {
+            let head = {x: snake[0].x + direction, y: snake[0].y};
+            if (head.x < 0 || head.x >= 20 || head.y < 0 || head.y >= 20) {
+                clearInterval(gameLoop);
+                alert('Игра окончена!');
+                return;
+            }
+            snake.unshift(head);
+            if (snake.length > 20) snake.pop();
+
+            if (head.x === food.x && head.y === food.y) {
+                score++;
+                food.x = Math.floor(Math.random() * 20);
+                food.y = Math.floor(Math.random() * 20);
+            } else {
+                snake.pop();
+            }
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.keyCode === 37 && direction === 1) return;
+            if (e.keyCode === 39 && direction === -1) return;
+            if (e.keyCode === 38 && direction === -1) return;
+            if (e.keyCode === 40 && direction === 1) return;
+
+            direction = e.keyCode === 37 ? -1 : (e.keyCode === 39 ? 1 : (e.keyCode === 38 ? -1 : 1));
+        });
+
+        draw();
+    </script>
+</body>
+</html>
